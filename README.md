@@ -126,12 +126,22 @@ How checkout works:
 - **Payment is simulated** and needs no keys. Any valid UPI ID or card number (Luhn-checked) is accepted. To show a failure, use card `4000 0000 0000 0002` or UPI ID `fail@upi`. Card details are never stored. `PaymentSimulator` is the only class that would change for Razorpay or Stripe.
 - Buyers and artists can shop; artists can't buy their own work, and admins can't place orders.
 
+## Artist orders and sales
+
+| Method | Endpoint | What it does |
+|--------|----------|--------------|
+| `GET` | `/api/artist/orders?filter=to_ship\|all` | Paid orders containing my artworks: only my lines, plus the shipping address |
+| `PATCH` | `/api/artist/orders/{orderId}/fulfilment` | Move my part of the order to `SHIPPED`, then `DELIVERED` |
+| `GET` | `/api/artist/sales/summary` | Revenue (all-time and last 30 days), items sold, orders to ship, last 6 months, best sellers |
+
+One order can include work from several artists. Each artist ships their own part, and the order's status follows from all of them: paid, then partly shipped, shipped, and delivered. Buyers can cancel only until the first part ships. Only paid, uncancelled sales count as revenue, and months are counted in Indian time. An artist whose approval is revoked can still ship what they already sold.
+
 ## Roadmap
 
 - [x] Project setup: Spring Boot API, MySQL schema, Docker, Tailwind frontend
 - [x] Accounts: register, sign in, JWT with refresh tokens, roles, artist approval
 - [x] Artwork catalog: search, filters, pagination, image upload, artist dashboard
 - [x] Cart, checkout (simulated payment) and orders
-- [ ] Artist orders and sales
+- [x] Artist orders and sales
 - [ ] Admin tools and reviews
 - [ ] Deployment on Railway

@@ -15,6 +15,8 @@ import Payment from './pages/orders/Payment'
 import NotFound from './pages/NotFound'
 import ArtistDashboard from './pages/artist/ArtistDashboard'
 import ArtworkEditor from './pages/artist/ArtworkEditor'
+import ArtistOrders from './pages/artist/ArtistOrders'
+import ArtistSales from './pages/artist/ArtistSales'
 import ArtistApplications from './pages/admin/ArtistApplications'
 
 const App = () => (
@@ -38,6 +40,8 @@ const App = () => (
         <Route path="artist" element={<ArtistDashboard />} />
         <Route path="artist/artworks/new" element={<ArtworkEditor />} />
         <Route path="artist/artworks/:id/edit" element={<ArtworkEditor />} />
+        <Route path="artist/orders" element={<ArtistOrders />} />
+        <Route path="artist/sales" element={<ArtistSales />} />
       </Route>
       <Route element={<ProtectedRoute roles={['ADMIN']} />}>
         <Route path="admin/artists" element={<ArtistApplications />} />

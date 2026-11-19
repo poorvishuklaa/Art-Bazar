@@ -10,6 +10,14 @@ import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
 import NotFound from '../NotFound'
 
+/** Per-artwork delivery progress, shown once an order is paid (each artist ships separately). */
+const itemStatus = {
+  PENDING: ['Preparing', 'text-gray-500'],
+  SHIPPED: ['Shipped', 'text-sky-700'],
+  DELIVERED: ['Delivered', 'text-green-700'],
+  CANCELLED: ['Cancelled', 'text-gray-400'],
+}
+
 const OrderDetail = () => {
   const { id } = useParams()
   const location = useLocation()
@@ -82,6 +90,9 @@ const OrderDetail = () => {
                 <p className="text-sm text-gray-500">
                   by <Link to={`/artists/${i.artistId}`} className="hover:text-brand-500">{i.artistName}</Link> · {formatPrice(i.unitPrice)} × {i.quantity}
                 </p>
+                {order.paymentStatus === 'PAID' && (
+                  <p className={`mt-1 text-xs font-medium ${itemStatus[i.status][1]}`}>{itemStatus[i.status][0]}</p>
+                )}
               </div>
               <span className="shrink-0 font-medium">{formatPrice(i.lineTotal)}</span>
             </li>

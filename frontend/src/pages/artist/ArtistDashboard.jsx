@@ -10,6 +10,8 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Spinner from '../../components/ui/Spinner'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import ArtistNav from '../../components/artist/ArtistNav'
+import { useSalesSummary } from '../../hooks/useSalesSummary'
 
 const StatusBadge = ({ status }) =>
   status === 'ACTIVE' ? (
@@ -72,9 +74,11 @@ const ArtistDashboard = () => {
   })
 
   const approved = user.artistApproved
+  const { data: summary } = useSalesSummary()
 
   return (
     <div className="py-10">
+      <ArtistNav toShip={summary?.ordersToShip} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-medium">My artworks</h1>
