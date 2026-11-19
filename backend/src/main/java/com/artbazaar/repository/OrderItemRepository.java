@@ -79,6 +79,15 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             """)
     List<Object[]> topArtworks(@Param("artistId") Long artistId, Pageable pageable);
 
+    /** Has this buyer paid for this artwork (in an order line that wasn't cancelled)? Required to review it. */
+    @Query("""
+            select count(i) > 0 from OrderItem i
+            where i.artwork.id = :artworkId and i.order.buyer.id = :buyerId
+              and i.order.paymentStatus = com.artbazaar.entity.PaymentStatus.PAID
+              and i.status <> com.artbazaar.entity.OrderItemStatus.CANCELLED
+            """)
+    boolean hasPurchased(@Param("buyerId") Long buyerId, @Param("artworkId") Long artworkId);
+
     static BigDecimal toBigDecimal(Object o) {
         return o instanceof BigDecimal b ? b : new BigDecimal(String.valueOf(o));
     }

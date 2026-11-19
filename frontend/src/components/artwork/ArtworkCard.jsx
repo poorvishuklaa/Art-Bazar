@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { formatPrice } from '../../utils/format'
+import { StarIcon } from '../ui/Icons'
 
 const ArtworkCard = ({ artwork }) => (
   <article className="group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-1 hover:shadow-lg">
@@ -19,6 +20,13 @@ const ArtworkCard = ({ artwork }) => (
         </Link>
       </h3>
       <p className="line-clamp-1 text-sm text-gray-500">by {artwork.artist.name}</p>
+      {artwork.averageRating != null && (
+        <p className="flex items-center gap-1 text-sm text-gray-600" aria-label={`Rated ${artwork.averageRating} out of 5 from ${artwork.reviewCount} reviews`}>
+          <StarIcon className="h-4 w-4 text-amber-400" />
+          <span className="font-medium">{artwork.averageRating.toFixed(1)}</span>
+          <span className="text-gray-400">({artwork.reviewCount})</span>
+        </p>
+      )}
       <div className="flex items-center justify-between pt-1">
         <span className="text-lg font-semibold text-brand-500">{formatPrice(artwork.price)}</span>
         {artwork.stock === 0 && <span className="text-xs font-medium text-gray-400">Sold out</span>}

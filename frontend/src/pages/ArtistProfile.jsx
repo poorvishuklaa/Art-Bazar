@@ -9,6 +9,7 @@ import EmptyState from '../components/ui/EmptyState'
 import Spinner from '../components/ui/Spinner'
 import Alert from '../components/ui/Alert'
 import NotFound from './NotFound'
+import Stars from '../components/review/Stars'
 
 const ArtistProfile = () => {
   const { id } = useParams()
@@ -53,6 +54,13 @@ const ArtistProfile = () => {
               .filter(Boolean)
               .join(' · ')}
           </p>
+          {a.averageRating != null && (
+            <p className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+              <Stars rating={a.averageRating} />
+              <span className="font-medium">{a.averageRating.toFixed(1)}</span>
+              <span>from {a.reviewCount} {a.reviewCount === 1 ? 'review' : 'reviews'}</span>
+            </p>
+          )}
           {a.bio && <p className="mt-3 max-w-2xl text-gray-700">{a.bio}</p>}
         </div>
       </header>

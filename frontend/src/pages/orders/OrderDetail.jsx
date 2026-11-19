@@ -91,7 +91,14 @@ const OrderDetail = () => {
                   by <Link to={`/artists/${i.artistId}`} className="hover:text-brand-500">{i.artistName}</Link> · {formatPrice(i.unitPrice)} × {i.quantity}
                 </p>
                 {order.paymentStatus === 'PAID' && (
-                  <p className={`mt-1 text-xs font-medium ${itemStatus[i.status][1]}`}>{itemStatus[i.status][0]}</p>
+                  <p className={`mt-1 text-xs font-medium ${itemStatus[i.status][1]}`}>
+                    {itemStatus[i.status][0]}
+                    {i.artworkId && i.status !== 'CANCELLED' && (
+                      <Link to={`/artworks/${i.artworkId}#reviews`} className="ml-3 font-normal text-brand-500 hover:underline">
+                        Rate this piece
+                      </Link>
+                    )}
+                  </p>
                 )}
               </div>
               <span className="shrink-0 font-medium">{formatPrice(i.lineTotal)}</span>

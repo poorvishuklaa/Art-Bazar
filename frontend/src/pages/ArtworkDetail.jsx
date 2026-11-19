@@ -8,6 +8,8 @@ import Spinner from '../components/ui/Spinner'
 import NotFound from './NotFound'
 import Alert from '../components/ui/Alert'
 import AddToCart from '../components/artwork/AddToCart'
+import ReviewsSection from '../components/review/ReviewsSection'
+import Stars from '../components/review/Stars'
 
 const stockLabel = (stock) => {
   if (stock === 0) return { text: 'Sold out', cls: 'text-gray-500' }
@@ -63,6 +65,14 @@ const ArtworkDetail = () => {
             {art.artist.city && <span className="text-gray-400"> · {art.artist.city}</span>}
           </p>
 
+          {art.averageRating != null && (
+            <a href="#reviews" className="mt-2 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-brand-500">
+              <Stars rating={art.averageRating} />
+              <span className="font-medium">{art.averageRating.toFixed(1)}</span>
+              <span>· {art.reviewCount} {art.reviewCount === 1 ? 'review' : 'reviews'}</span>
+            </a>
+          )}
+
           <p className="mt-6 text-3xl font-semibold text-brand-500">{formatPrice(art.price)}</p>
           <p className={`mt-2 text-sm font-medium ${stock.cls}`}>{stock.text}</p>
 
@@ -78,6 +88,8 @@ const ArtworkDetail = () => {
           )}
         </div>
       </div>
+
+      <ReviewsSection artworkId={art.id} />
 
       {others.length > 0 && (
         <section className="mt-16">
