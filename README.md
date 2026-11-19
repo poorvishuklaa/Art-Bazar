@@ -2,6 +2,8 @@
 
 A marketplace where local artists register, list their artworks and sell directly to buyers.
 
+**Live demo:** https://art-bazaar.up.railway.app (hosted on Railway: React + nginx, Spring Boot API, MySQL)
+
 **Stack:** Java 21 · Spring Boot 4 · Spring Security (JWT, role-based access) · Spring Data JPA · MySQL 8 · Flyway · React 18 · Vite · Tailwind CSS
 
 ## Project structure
