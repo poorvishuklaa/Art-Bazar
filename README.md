@@ -28,13 +28,7 @@ A marketplace where local artists register, list their artworks and sell directl
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    B[Browser<br/>React SPA] -- HTTPS --> N[nginx<br/>static files + reverse proxy]
-    N -- /api, /uploads, /images --> S[Spring Boot API]
-    S -- JPA / Flyway --> M[(MySQL 8)]
-    S -- uploaded photos --> V[(Volume)]
-```
+![Architecture: Browser (React SPA) → HTTPS → nginx (static files + reverse proxy) → /api, /uploads, /images → Spring Boot API → MySQL 8 (JPA + Flyway) and a volume for uploaded photos](docs/architecture.png)
 
 The browser only ever talks to one origin: nginx serves the React build and forwards API calls to Spring Boot over the private network. That keeps the refresh-token cookie `SameSite=Strict` and removes the need for cross-origin cookies.
 
