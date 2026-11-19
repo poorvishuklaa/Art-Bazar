@@ -10,6 +10,7 @@ import com.artbazaar.security.UserPrincipal;
 import com.artbazaar.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -50,8 +51,8 @@ public class AuthController {
 
     @Operation(summary = "Sign in with email and password")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        return withCookie(HttpStatus.OK, authService.login(request));
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
+        return withCookie(HttpStatus.OK, authService.login(request, http.getRemoteAddr()));
     }
 
     @Operation(summary = "Exchange the refresh cookie for a new access token (rotates the cookie)")
@@ -73,6 +74,11 @@ public class AuthController {
     @GetMapping("/me")
     public UserResponse me(@AuthenticationPrincipal UserPrincipal principal) {
         return UserResponse.from(principal);
+    }
+
+    /** Used by AccountController after a password change, which rotates the session. */
+    ResponseEntity<AuthResponse> sessionResponse(AuthResult result) {
+        return withCookie(HttpStatus.OK, result);
     }
 
     private ResponseEntity<AuthResponse> withCookie(HttpStatus status, AuthResult result) {

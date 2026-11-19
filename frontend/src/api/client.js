@@ -27,20 +27,9 @@ export const setSessionExpiredHandler = (handler) => {
   onSessionExpired = handler
 }
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-async function requestRefresh() {
-  try {
-    return (await api.post('/auth/refresh', null, { skipAuthRefresh: true })).data
-  } catch (error) {
-    // Another tab rotated the cookie a moment ago; its replacement is already in the cookie jar.
-    if (error.response?.data?.code === 'REFRESH_RACE') {
-      await wait(400)
-      return (await api.post('/auth/refresh', null, { skipAuthRefresh: true })).data
-    }
-    throw error
-  }
-}
+// The server accepts a cookie that was rotated a few seconds ago, so two tabs refreshing at once
+// (or a reload that interrupted a refresh) don't sign the user out; no client-side retry needed.
+const requestRefresh = () => api.post('/auth/refresh', null, { skipAuthRefresh: true }).then((r) => r.data)
 
 /** Exchanges the refresh cookie for a new access token. Concurrent callers share one request. */
 export function refreshSession() {

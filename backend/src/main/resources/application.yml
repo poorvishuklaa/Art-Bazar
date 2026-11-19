@@ -24,6 +24,9 @@ spring:
 
 server:
   port: ${PORT:8080}
+  # Honour X-Forwarded-For/Proto from the nginx/Railway proxy, so rate limiting sees the real client IP.
+  # The API is only reachable through that proxy (it has no public domain), so the header can't be spoofed.
+  forward-headers-strategy: framework
   error:
     include-stacktrace: never
 

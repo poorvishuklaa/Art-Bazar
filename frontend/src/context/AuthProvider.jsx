@@ -15,7 +15,8 @@ export default function AuthProvider({ children }) {
 
   // Per-user data must never leak into the next person's session on a shared computer.
   const dropUserData = useCallback(() => {
-    const userScopedKeys = ['cart', 'orders', 'order', 'my-artworks', 'my-artwork']
+    const userScopedKeys = ['cart', 'orders', 'order', 'my-artworks', 'my-artwork', 'account', 'my-review',
+      'artist-orders', 'sales-summary', 'admin']
     userScopedKeys.forEach((key) => queryClient.removeQueries({ queryKey: [key] }))
   }, [queryClient])
 
@@ -52,12 +53,18 @@ export default function AuthProvider({ children }) {
     }
   }, [clearSession])
 
+  /** After a password change the server issues new tokens for this session; keep the cached data. */
+  const replaceTokens = useCallback((data) => {
+    setAccessToken(data.accessToken)
+    setUser(data.user)
+  }, [])
+
   /** Re-reads the user, e.g. to pick up an admin approving this artist. */
   const reloadUser = useCallback(() => fetchMe().then((me) => (setUser(me), me)), [])
 
   const value = useMemo(
-    () => ({ user, status, isAuthenticated: status === 'authenticated', login, register, logout, reloadUser }),
-    [user, status, login, register, logout, reloadUser],
+    () => ({ user, status, isAuthenticated: status === 'authenticated', login, register, logout, reloadUser, replaceTokens }),
+    [user, status, login, register, logout, reloadUser, replaceTokens],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

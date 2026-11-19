@@ -11,6 +11,7 @@ import { useAuth } from '../../hooks/useAuth'
 import FormField from '../../components/ui/FormField'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -32,6 +33,7 @@ const schema = z.object({
 const ArtworkEditor = () => {
   const { id } = useParams()
   const isEdit = Boolean(id)
+  usePageTitle(isEdit ? 'Edit artwork' : 'Add artwork')
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { user } = useAuth()

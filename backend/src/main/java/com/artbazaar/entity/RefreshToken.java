@@ -2,6 +2,8 @@ package com.artbazaar.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -32,6 +34,24 @@ public class RefreshToken extends BaseEntity {
 
     @Column(name = "revoked_at")
     private Instant revokedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "revoke_reason", length = 20)
+    private RevokeReason revokeReason;
+
+    public enum RevokeReason {
+        /** Replaced by a newer token during a normal refresh. */
+        ROTATED,
+        /** The user signed out of this session. */
+        LOGOUT,
+        /** Every session ended: password change, account disabled, or a stolen token was detected. */
+        ALL_SESSIONS
+    }
+
+    public void revoke(Instant when, RevokeReason reason) {
+        this.revokedAt = when;
+        this.revokeReason = reason;
+    }
 
     public boolean isRevoked() {
         return revokedAt != null;

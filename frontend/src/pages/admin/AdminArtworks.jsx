@@ -11,6 +11,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Spinner from '../../components/ui/Spinner'
 import Alert from '../../components/ui/Alert'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const filters = [['', 'Live & hidden'], ['ACTIVE', 'Listed'], ['HIDDEN', 'Hidden'], ['REMOVED', 'Taken down']]
 const badge = {
@@ -25,6 +26,7 @@ const actions = {
 }
 
 const AdminArtworks = () => {
+  usePageTitle('Artworks · Admin')
   const queryClient = useQueryClient()
   const [params, setParams] = useSearchParams()
   const q = params.get('q') ?? ''

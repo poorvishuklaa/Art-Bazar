@@ -74,6 +74,15 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Request body is missing or malformed", req, null);
     }
 
+    @ExceptionHandler(TooManyRequestsException.class)
+    ResponseEntity<ApiError> tooMany(TooManyRequestsException ex, HttpServletRequest req) {
+        ApiError body = new ApiError(Instant.now(), 429, HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(), ex.getMessage(),
+                req.getRequestURI(), null, null);
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(ex.getRetryAfterSeconds()))
+                .body(body);
+    }
+
     @ExceptionHandler(PaymentDeclinedException.class)
     ResponseEntity<ApiError> declined(PaymentDeclinedException ex, HttpServletRequest req) {
         return build(HttpStatus.PAYMENT_REQUIRED, ex.getMessage(), req, null);

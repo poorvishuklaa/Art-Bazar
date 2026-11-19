@@ -7,6 +7,7 @@ import AdminNav from '../../components/admin/AdminNav'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import Spinner from '../../components/ui/Spinner'
 import Alert from '../../components/ui/Alert'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const bundledIcon = Object.fromEntries(fallbackCategories.map((c) => [c.slug, c.iconUrl]))
 const IMAGE_TYPES = 'image/jpeg,image/png,image/webp'
@@ -60,6 +61,7 @@ const CategoryForm = ({ initialName = '', submitLabel, busy, onSubmit, onCancel 
 }
 
 const AdminCategories = () => {
+  usePageTitle('Categories')
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState(null)
   const [deleting, setDeleting] = useState(null)

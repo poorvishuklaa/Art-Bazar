@@ -11,10 +11,12 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Spinner from '../../components/ui/Spinner'
 import Alert from '../../components/ui/Alert'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const roles = [['', 'All roles'], ['BUYER', 'Buyers'], ['ARTIST', 'Artists'], ['ADMIN', 'Admins']]
 
 const AdminUsers = () => {
+  usePageTitle('Users')
   const queryClient = useQueryClient()
   const [params, setParams] = useSearchParams()
   const q = params.get('q') ?? ''

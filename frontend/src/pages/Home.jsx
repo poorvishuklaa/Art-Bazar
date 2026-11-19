@@ -7,10 +7,12 @@ import Alert from '../components/ui/Alert'
 import { useCategories } from '../hooks/useCategories'
 import { searchArtworks } from '../api/artworks'
 import { getErrorMessage } from '../api/client'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const latestQuery = { sort: 'newest', size: 8 }
 
 const Home = () => {
+  usePageTitle(null)
   const categories = useCategories()
   const latest = useQuery({ queryKey: ['artworks', latestQuery], queryFn: () => searchArtworks(latestQuery) })
 

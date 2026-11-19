@@ -14,7 +14,12 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     Optional<RefreshToken> findByTokenHash(String tokenHash);
 
     @Modifying
-    @Query("update RefreshToken t set t.revokedAt = :now where t.user.id = :userId and t.revokedAt is null")
+    @Query("""
+            update RefreshToken t
+            set t.revokedAt = :now, t.revokeReason = com.artbazaar.entity.RefreshToken.RevokeReason.ALL_SESSIONS
+            where t.user.id = :userId
+              and (t.revokedAt is null or t.revokeReason = com.artbazaar.entity.RefreshToken.RevokeReason.ROTATED)
+            """)
     int revokeAllForUser(@Param("userId") Long userId, @Param("now") Instant now);
 
     @Modifying

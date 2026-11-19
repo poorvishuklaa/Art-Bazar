@@ -9,6 +9,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
 import NotFound from '../NotFound'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 /** Per-artwork delivery progress, shown once an order is paid (each artist ships separately). */
 const itemStatus = {
@@ -20,6 +21,7 @@ const itemStatus = {
 
 const OrderDetail = () => {
   const { id } = useParams()
+  usePageTitle(`Order #${id}`)
   const location = useLocation()
   const queryClient = useQueryClient()
   const [justPaid] = useState(() => location.state?.justPaid)

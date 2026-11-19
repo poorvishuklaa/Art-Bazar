@@ -6,6 +6,7 @@ import QuantityStepper from '../components/ui/QuantityStepper'
 import EmptyState from '../components/ui/EmptyState'
 import Spinner from '../components/ui/Spinner'
 import Alert from '../components/ui/Alert'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const issueText = {
   UNAVAILABLE: 'No longer available. Please remove it.',
@@ -13,6 +14,7 @@ const issueText = {
 }
 
 const Cart = () => {
+  usePageTitle('Your cart')
   const { cart, isPending, isError, error } = useCart()
   const { update, remove } = useCartMutations()
   const mutationError = update.error ?? remove.error

@@ -10,6 +10,7 @@ import Spinner from '../components/ui/Spinner'
 import { useAuth } from '../hooks/useAuth'
 import { getErrorMessage, getFieldErrors } from '../api/client'
 import { homeFor } from '../utils/roles'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // Mirrors the backend RegisterRequest rules so most mistakes are caught before a round trip.
 const schema = z
@@ -37,6 +38,7 @@ const accountTypes = [
 ]
 
 const Register = () => {
+  usePageTitle('Create an account')
   const { register: signUp, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const [serverError, setServerError] = useState('')

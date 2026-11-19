@@ -12,6 +12,7 @@ import Spinner from '../../components/ui/Spinner'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import ArtistNav from '../../components/artist/ArtistNav'
 import { useSalesSummary } from '../../hooks/useSalesSummary'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const StatusBadge = ({ status }) =>
   status === 'ACTIVE' ? (
@@ -21,6 +22,7 @@ const StatusBadge = ({ status }) =>
   )
 
 const ArtistDashboard = () => {
+  usePageTitle('My artworks')
   const { user, reloadUser } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()

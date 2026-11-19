@@ -8,12 +8,14 @@ import com.artbazaar.dto.auth.UserResponse;
 import com.artbazaar.entity.ArtistProfile;
 import com.artbazaar.entity.Role;
 import com.artbazaar.entity.User;
+import com.artbazaar.exception.BadRequestException;
 import com.artbazaar.exception.ConflictException;
 import com.artbazaar.exception.UnauthorizedException;
 import com.artbazaar.repository.ArtistProfileRepository;
 import com.artbazaar.repository.UserRepository;
 import com.artbazaar.security.CurrentUserLoader;
 import com.artbazaar.security.JwtService;
+import com.artbazaar.security.LoginAttemptLimiter;
 import com.artbazaar.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +37,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final CurrentUserLoader currentUserLoader;
+    private final LoginAttemptLimiter loginLimiter;
 
     /** Hash checked when the email is unknown, so response time does not reveal which emails exist. */
     private String dummyHash;
@@ -64,15 +67,20 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResult login(LoginRequest req) {
-        User user = userRepository.findByEmail(normalizeEmail(req.email())).orElse(null);
+    public AuthResult login(LoginRequest req, String clientIp) {
+        String email = normalizeEmail(req.email());
+        loginLimiter.checkAllowed(email, clientIp);
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
             passwordEncoder.matches(req.password(), dummyHash());
+            loginLimiter.recordFailure(email, clientIp);
             throw new UnauthorizedException(INVALID_LOGIN);
         }
         if (!passwordEncoder.matches(req.password(), user.getPasswordHash())) {
+            loginLimiter.recordFailure(email, clientIp);
             throw new UnauthorizedException(INVALID_LOGIN);
         }
+        loginLimiter.recordSuccess(email, clientIp);
         if (!user.isEnabled()) {
             throw new UnauthorizedException("This account has been disabled. Contact support for help.");
         }
@@ -88,6 +96,24 @@ public class AuthService {
 
     public void logout(String refreshToken) {
         refreshTokenService.revoke(refreshToken);
+    }
+
+    /**
+     * Changes the password, signs the user out everywhere else (all refresh tokens revoked) and
+     * returns fresh tokens so the current session continues.
+     */
+    @Transactional
+    public AuthResult changePassword(Long userId, String currentPassword, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UnauthorizedException("Session expired"));
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new BadRequestException("Your current password is incorrect");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            throw new BadRequestException("Choose a password different from your current one");
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        refreshTokenService.revokeAll(user.getId());
+        return issueTokens(user);
     }
 
     private AuthResult issueTokens(User user) {

@@ -6,6 +6,7 @@ import { formatPrice } from '../../utils/format'
 import AdminNav from '../../components/admin/AdminNav'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const Tile = ({ label, value, note, to }) => {
   const inner = (
@@ -20,6 +21,7 @@ const Tile = ({ label, value, note, to }) => {
 }
 
 const AdminOverview = () => {
+  usePageTitle('Admin overview')
   const { data: s, isPending, isError, error } = useQuery({ queryKey: ['admin', 'stats'], queryFn: fetchAdminStats })
 
   return (

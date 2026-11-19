@@ -40,5 +40,5 @@ const roleLinks = {
 /** Buyers and artists can buy; admins only moderate. */
 export const canShop = (user) => user?.role === 'BUYER' || user?.role === 'ARTIST'
 
-/** Extra menu links for the signed-in user's role. */
-export const linksFor = (user) => roleLinks[user?.role] ?? []
+/** Menu links for the signed-in user: their role's links, then account settings. */
+export const linksFor = (user) => (user ? [...(roleLinks[user.role] ?? []), { to: '/account', label: 'Account settings' }] : [])

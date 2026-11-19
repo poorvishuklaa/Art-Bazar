@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { usePageTitle } from '../hooks/usePageTitle'
 
-const NotFound = () => (
+const NotFound = () => {
+  usePageTitle('Page not found')
+  return (
   <div className="py-24 text-center">
     <p className="text-6xl font-semibold text-brand-500">404</p>
     <h1 className="mt-4 text-2xl font-medium">Page not found</h1>
@@ -9,6 +12,7 @@ const NotFound = () => (
       Back to home
     </Link>
   </div>
-)
+  )
+}
 
 export default NotFound

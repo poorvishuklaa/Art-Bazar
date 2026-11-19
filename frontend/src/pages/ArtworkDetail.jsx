@@ -10,6 +10,7 @@ import Alert from '../components/ui/Alert'
 import AddToCart from '../components/artwork/AddToCart'
 import ReviewsSection from '../components/review/ReviewsSection'
 import Stars from '../components/review/Stars'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const stockLabel = (stock) => {
   if (stock === 0) return { text: 'Sold out', cls: 'text-gray-500' }
@@ -20,6 +21,7 @@ const stockLabel = (stock) => {
 const ArtworkDetail = () => {
   const { id } = useParams()
   const { data: art, isPending, isError, error } = useQuery({ queryKey: ['artwork', id], queryFn: () => fetchArtwork(id) })
+  usePageTitle(art ? `${art.title} by ${art.artist.name}` : 'Artwork')
 
   const moreQuery = { artistId: art?.artist.id, size: 5 }
   const more = useQuery({

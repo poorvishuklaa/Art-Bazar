@@ -201,11 +201,14 @@ class AuthFlowIntegrationTest {
         String second = refreshCookie(mvc.perform(post("/api/auth/refresh").cookie(new Cookie("ab_refresh", first)))
                 .andExpect(status().isOk()).andReturn());
 
-        // A second tab raced with the same cookie: rejected with a retryable code, and the new session survives.
-        mvc.perform(post("/api/auth/refresh").cookie(new Cookie("ab_refresh", first)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("REFRESH_RACE"));
+        // A second tab (or an interrupted reload) resends the just-rotated cookie: still accepted,
+        // and neither session is killed.
+        String third = refreshCookie(mvc.perform(post("/api/auth/refresh").cookie(new Cookie("ab_refresh", first)))
+                .andExpect(status().isOk()).andReturn());
+        assertThat(third).isNotEqualTo(second);
         mvc.perform(post("/api/auth/refresh").cookie(new Cookie("ab_refresh", second)))
+                .andExpect(status().isOk());
+        mvc.perform(post("/api/auth/refresh").cookie(new Cookie("ab_refresh", third)))
                 .andExpect(status().isOk());
     }
 

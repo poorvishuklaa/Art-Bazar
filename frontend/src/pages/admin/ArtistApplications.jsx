@@ -4,6 +4,7 @@ import { getErrorMessage } from '../../api/client'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
 import AdminNav from '../../components/admin/AdminNav'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const tabs = [
   { key: 'pending', label: 'Pending', approved: false },
@@ -13,6 +14,7 @@ const tabs = [
 const dateFormat = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' })
 
 const ArtistApplications = () => {
+  usePageTitle('Artist applications')
   const [tab, setTab] = useState('pending')
   const [artists, setArtists] = useState([])
   const [loading, setLoading] = useState(true)

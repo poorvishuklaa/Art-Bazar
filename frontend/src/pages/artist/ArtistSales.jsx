@@ -6,6 +6,7 @@ import ArtistNav from '../../components/artist/ArtistNav'
 import RevenueChart from '../../components/artist/RevenueChart'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const StatTile = ({ label, value, note, to }) => {
   const body = (
@@ -21,6 +22,7 @@ const StatTile = ({ label, value, note, to }) => {
 
 /** Sales overview for the signed-in artist. Only paid, uncancelled sales count as revenue. */
 const ArtistSales = () => {
+  usePageTitle('Sales')
   const { data, isPending, isError, error } = useSalesSummary()
 
   return (

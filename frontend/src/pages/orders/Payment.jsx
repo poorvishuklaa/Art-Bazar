@@ -6,6 +6,7 @@ import { getErrorMessage } from '../../api/client'
 import { formatPrice } from '../../utils/format'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const timeFormat = new Intl.DateTimeFormat('en-IN', { timeStyle: 'short' })
 
@@ -21,6 +22,7 @@ const formatExpiry = (v) => {
 
 /** Simulated payment step. Nothing here talks to a real gateway or stores card details. */
 const Payment = () => {
+  usePageTitle('Payment')
   const { id } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()

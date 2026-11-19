@@ -10,6 +10,7 @@ import Pagination from '../components/ui/Pagination'
 import EmptyState from '../components/ui/EmptyState'
 import Alert from '../components/ui/Alert'
 import { SearchIcon } from '../components/ui/Icons'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const PAGE_SIZE = 12
 
@@ -22,6 +23,7 @@ const sorts = [
 
 /** Catalog with every filter kept in the URL, so results can be bookmarked and shared. */
 const Browse = () => {
+  usePageTitle('Browse artworks')
   const [params, setParams] = useSearchParams()
   const location = useLocation()
   const categories = useCategories()

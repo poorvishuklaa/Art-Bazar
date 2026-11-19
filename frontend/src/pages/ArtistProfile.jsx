@@ -10,6 +10,7 @@ import Spinner from '../components/ui/Spinner'
 import Alert from '../components/ui/Alert'
 import NotFound from './NotFound'
 import Stars from '../components/review/Stars'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const ArtistProfile = () => {
   const { id } = useParams()
@@ -17,6 +18,7 @@ const ArtistProfile = () => {
   const page = Math.max(Number(params.get('page') ?? 1) - 1, 0)
 
   const artist = useQuery({ queryKey: ['artist', id], queryFn: () => fetchArtist(id) })
+  usePageTitle(artist.data ? artist.data.name : 'Artist')
   const worksQuery = { artistId: id, page, size: 12 }
   const works = useQuery({
     queryKey: ['artworks', worksQuery],

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class UnauthorizedException extends RuntimeException {
 
-    /** Optional machine-readable reason the client can act on, e.g. {@code REFRESH_RACE}. */
+    /** Optional machine-readable reason a client can act on (included in the error body as "code"). */
     private final String code;
 
     public UnauthorizedException(String message) {

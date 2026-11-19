@@ -8,8 +8,10 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Spinner from '../../components/ui/Spinner'
 import Alert from '../../components/ui/Alert'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const Orders = () => {
+  usePageTitle('My orders')
   const [params, setParams] = useSearchParams()
   const page = Math.max(Number(params.get('page') ?? 1) - 1, 0)
   const { data, isPending, isError, error } = useQuery({

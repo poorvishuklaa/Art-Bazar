@@ -11,6 +11,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Spinner from '../../components/ui/Spinner'
 import Alert from '../../components/ui/Alert'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const partBadge = {
   PENDING: ['To ship', 'bg-amber-50 text-amber-800 ring-amber-200'],
@@ -26,6 +27,7 @@ const nextStep = {
 
 /** Orders containing the signed-in artist's work: what to post, and where. */
 const ArtistOrders = () => {
+  usePageTitle('Orders to ship')
   const queryClient = useQueryClient()
   const [params, setParams] = useSearchParams()
   const filter = params.get('filter') === 'all' ? 'all' : 'to_ship'

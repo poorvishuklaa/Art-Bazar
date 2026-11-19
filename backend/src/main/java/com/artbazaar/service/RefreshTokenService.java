@@ -24,8 +24,12 @@ import java.util.HexFormat;
 /**
  * Long-lived refresh tokens with rotation: every refresh revokes the presented token and
  * issues a new one. If an already-revoked token is presented again, it was probably stolen,
- * so every session of that user is revoked. A short grace period tolerates the benign race of two
- * tabs refreshing with the same cookie at the same moment.
+ * so every session of that user is revoked.
+ *
+ * <p>Exception: a token rotated within the last {@link #REUSE_GRACE} is accepted once more. Browsers
+ * legitimately resend it when two tabs refresh at once, or when a page reload aborts a refresh whose
+ * response (with the new cookie) never got stored. Without this, ordinary navigation could sign
+ * people out. Theft detection still applies to any reuse after the grace period.
  */
 @Slf4j
 @Service
@@ -34,7 +38,6 @@ public class RefreshTokenService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
     static final Duration REUSE_GRACE = Duration.ofSeconds(10);
-    public static final String REFRESH_RACE = "REFRESH_RACE";
 
     private final RefreshTokenRepository repository;
     private final AppProperties props;
@@ -64,19 +67,24 @@ public class RefreshTokenService {
         RefreshToken token = repository.findByTokenHash(hash(raw))
                 .orElseThrow(() -> new UnauthorizedException("Session expired. Please sign in again."));
 
-        if (token.isRevoked()) {
-            if (token.getRevokedAt().isAfter(now.minus(REUSE_GRACE))) {
-                // Concurrent refresh from another tab: reject, the client retries with the new cookie.
-                throw new UnauthorizedException("Session was just refreshed elsewhere", REFRESH_RACE);
-            }
-            log.warn("Reuse of revoked refresh token for user {}; revoking all sessions", token.getUser().getId());
+        boolean rotated = token.getRevokeReason() == RefreshToken.RevokeReason.ROTATED;
+        boolean justRotated = rotated && token.getRevokedAt().isAfter(now.minus(REUSE_GRACE));
+        if (rotated && !justRotated) {
+            // A replaced token resurfacing long after rotation means someone else holds a copy.
+            log.warn("Reuse of rotated refresh token for user {}; revoking all sessions", token.getUser().getId());
             repository.revokeAllForUser(token.getUser().getId(), now);
+            throw new UnauthorizedException("Session expired. Please sign in again.");
+        }
+        if (token.isRevoked() && !rotated) {
+            // Ended on purpose (logout, password change, disabled): simply no longer valid.
             throw new UnauthorizedException("Session expired. Please sign in again.");
         }
         if (token.isExpired(now) || !token.getUser().isEnabled()) {
             throw new UnauthorizedException("Session expired. Please sign in again.");
         }
-        token.setRevokedAt(now);
+        if (!justRotated) {
+            token.revoke(now, RefreshToken.RevokeReason.ROTATED);
+        }
         return token.getUser();
     }
 
@@ -87,7 +95,7 @@ public class RefreshTokenService {
         }
         repository.findByTokenHash(hash(raw))
                 .filter(t -> !t.isRevoked())
-                .ifPresent(t -> t.setRevokedAt(clock.instant()));
+                .ifPresent(t -> t.revoke(clock.instant(), RefreshToken.RevokeReason.LOGOUT));
     }
 
     @Transactional

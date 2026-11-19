@@ -9,6 +9,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
+import Account from './pages/Account'
 import Orders from './pages/orders/Orders'
 import OrderDetail from './pages/orders/OrderDetail'
 import Payment from './pages/orders/Payment'
@@ -34,6 +35,9 @@ const App = () => (
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
 
+      <Route element={<ProtectedRoute />}>
+        <Route path="account" element={<Account />} />
+      </Route>
       <Route element={<ProtectedRoute roles={['BUYER', 'ARTIST']} />}>
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<Checkout />} />

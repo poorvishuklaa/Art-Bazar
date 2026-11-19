@@ -12,6 +12,7 @@ import { formatPrice } from '../utils/format'
 import FormField from '../components/ui/FormField'
 import Alert from '../components/ui/Alert'
 import Spinner from '../components/ui/Spinner'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const STATES = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana',
@@ -32,6 +33,7 @@ const schema = z.object({
 })
 
 const Checkout = () => {
+  usePageTitle('Checkout')
   const { user } = useAuth()
   const { cart, isPending } = useCart()
   const navigate = useNavigate()

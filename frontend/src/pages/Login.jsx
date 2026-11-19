@@ -10,6 +10,7 @@ import Spinner from '../components/ui/Spinner'
 import { useAuth } from '../hooks/useAuth'
 import { getErrorMessage } from '../api/client'
 import { destinationAfterLogin } from '../utils/roles'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const schema = z.object({
   email: z.email('Enter a valid email address'),
@@ -17,6 +18,7 @@ const schema = z.object({
 })
 
 const Login = () => {
+  usePageTitle('Sign in')
   const { login, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()

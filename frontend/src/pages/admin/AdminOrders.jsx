@@ -9,6 +9,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Spinner from '../../components/ui/Spinner'
 import Alert from '../../components/ui/Alert'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const statuses = [
   ['', 'All orders'], ['PLACED', 'Awaiting payment'], ['PAID', 'Paid'], ['PARTIALLY_SHIPPED', 'Partly shipped'],
@@ -16,6 +17,7 @@ const statuses = [
 ]
 
 const AdminOrders = () => {
+  usePageTitle('Orders · Admin')
   const [params, setParams] = useSearchParams()
   const status = params.get('status') ?? ''
   const page = Math.max(Number(params.get('page') ?? 1) - 1, 0)
