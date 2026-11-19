@@ -41,6 +41,9 @@ app:
     email: ${ADMIN_EMAIL:}
     password: ${ADMIN_PASSWORD:}
     name: ${ADMIN_NAME:Admin}
+  orders:
+    # Unpaid orders are cancelled after this long and their stock is released.
+    payment-window: ${ORDER_PAYMENT_WINDOW:30m}
   seed:
     # Adds demo artists and artworks when the catalog is empty, so a fresh install has something to browse.
     demo-data: ${SEED_DEMO_DATA:true}

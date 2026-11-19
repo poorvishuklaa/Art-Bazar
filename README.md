@@ -71,6 +71,7 @@ Web app: http://localhost:3000 · API: http://localhost:8080 · Swagger UI: http
 | `JWT_ACCESS_TTL` / `JWT_REFRESH_TTL` | `15m` / `7d` |
 | `REFRESH_COOKIE_SECURE` | `false` (set `true` when served over HTTPS) |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` | unset (no admin is created) |
+| `ORDER_PAYMENT_WINDOW` | `30m`: unpaid orders are cancelled after this and their stock is released |
 | `SEED_DEMO_DATA` | `true`: adds 3 demo artists and 18 artworks when the catalog is empty |
 
 ## Authentication
@@ -106,12 +107,31 @@ cd frontend && npm run lint && npm run build
 
 Full interactive docs: http://localhost:8080/swagger-ui.html
 
+## Cart, checkout and orders
+
+| Method | Endpoint | What it does |
+|--------|----------|--------------|
+| `GET` | `/api/cart` | The cart, with each line flagged if it became unavailable, sold out or short on stock |
+| `POST` | `/api/cart/items` | Add an artwork (`artworkId`, `quantity`) |
+| `PUT` / `DELETE` | `/api/cart/items/{artworkId}` | Change the quantity or take a line out |
+| `POST` | `/api/orders` | Check out with a shipping address: reserves stock and empties the cart |
+| `POST` | `/api/orders/{id}/pay` | Simulated payment by UPI or card |
+| `POST` | `/api/orders/{id}/cancel` | Cancel before shipping: stock goes back on sale, and a paid order is refunded |
+| `GET` | `/api/orders` · `/api/orders/{id}` | The buyer's own orders |
+
+How checkout works:
+- **No overselling.** Checkout locks the artworks it is buying (`SELECT ... FOR UPDATE`, always in id order so two checkouts can't deadlock) before it checks and reduces stock. A test fires several checkouts at the last piece at the same moment, and exactly one succeeds.
+- **Stock is reserved at checkout, not at payment.** A buyer on the payment page is guaranteed the items. Orders left unpaid for 30 minutes are cancelled by a scheduled job, which returns the stock.
+- **Prices are copied into the order,** so editing or deleting an artwork later never changes past orders.
+- **Payment is simulated** and needs no keys. Any valid UPI ID or card number (Luhn-checked) is accepted. To show a failure, use card `4000 0000 0000 0002` or UPI ID `fail@upi`. Card details are never stored. `PaymentSimulator` is the only class that would change for Razorpay or Stripe.
+- Buyers and artists can shop; artists can't buy their own work, and admins can't place orders.
+
 ## Roadmap
 
 - [x] Project setup: Spring Boot API, MySQL schema, Docker, Tailwind frontend
 - [x] Accounts: register, sign in, JWT with refresh tokens, roles, artist approval
 - [x] Artwork catalog: search, filters, pagination, image upload, artist dashboard
-- [ ] Cart, checkout (simulated payment) and orders
+- [x] Cart, checkout (simulated payment) and orders
 - [ ] Artist orders and sales
 - [ ] Admin tools and reviews
 - [ ] Deployment on Railway

@@ -7,7 +7,11 @@ import ArtworkDetail from './pages/ArtworkDetail'
 import ArtistProfile from './pages/ArtistProfile'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import ComingSoon from './pages/ComingSoon'
+import Cart from './pages/Cart'
+import Checkout from './pages/Checkout'
+import Orders from './pages/orders/Orders'
+import OrderDetail from './pages/orders/OrderDetail'
+import Payment from './pages/orders/Payment'
 import NotFound from './pages/NotFound'
 import ArtistDashboard from './pages/artist/ArtistDashboard'
 import ArtworkEditor from './pages/artist/ArtworkEditor'
@@ -23,8 +27,12 @@ const App = () => (
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
 
-      <Route element={<ProtectedRoute />}>
-        <Route path="cart" element={<ComingSoon title="Your cart" />} />
+      <Route element={<ProtectedRoute roles={['BUYER', 'ARTIST']} />}>
+        <Route path="cart" element={<Cart />} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="orders/:id" element={<OrderDetail />} />
+        <Route path="orders/:id/pay" element={<Payment />} />
       </Route>
       <Route element={<ProtectedRoute roles={['ARTIST']} />}>
         <Route path="artist" element={<ArtistDashboard />} />

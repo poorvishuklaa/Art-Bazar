@@ -70,6 +70,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_PATHS).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/artist/**").hasRole("ARTIST")
+                        .requestMatchers("/api/cart/**", "/api/cart", "/api/orders/**", "/api/orders")
+                        .hasAnyRole("BUYER", "ARTIST")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // Route 401/403 through GlobalExceptionHandler so every error has the same JSON shape.

@@ -1,11 +1,17 @@
 /** Role-restricted areas; must match the <ProtectedRoute roles> in App.jsx. */
 const restrictedAreas = [
-  { prefix: '/admin', roles: ['ADMIN'] },
-  { prefix: '/artist', roles: ['ARTIST'] },
+  { area: '/admin', roles: ['ADMIN'] },
+  { area: '/artist', roles: ['ARTIST'] }, // not /artists/:id, which is public
+  { area: '/cart', roles: ['BUYER', 'ARTIST'] },
+  { area: '/checkout', roles: ['BUYER', 'ARTIST'] },
+  { area: '/orders', roles: ['BUYER', 'ARTIST'] },
 ]
 
+/** True for the area itself and anything below it: "/artist" and "/artist/x", but not "/artists". */
+const inArea = (path, area) => path === area || path.startsWith(`${area}/`)
+
 export const canVisit = (user, path) =>
-  restrictedAreas.every((a) => !path.startsWith(a.prefix) || a.roles.includes(user?.role))
+  restrictedAreas.every((a) => !inArea(path, a.area) || a.roles.includes(user?.role))
 
 /** After sign-in: back to where they were heading if their role may go there, else their home. */
 export const destinationAfterLogin = (user, from) => (from && canVisit(user, from) ? from : homeFor(user))
@@ -18,10 +24,16 @@ export const homeFor = (user) => {
 }
 
 const roleLinks = {
-  ARTIST: [{ to: '/artist', label: 'My artworks' }],
+  ARTIST: [
+    { to: '/artist', label: 'My artworks' },
+    { to: '/orders', label: 'My orders' },
+  ],
   ADMIN: [{ to: '/admin/artists', label: 'Artist applications' }],
-  BUYER: [],
+  BUYER: [{ to: '/orders', label: 'My orders' }],
 }
+
+/** Buyers and artists can buy; admins only moderate. */
+export const canShop = (user) => user?.role === 'BUYER' || user?.role === 'ARTIST'
 
 /** Extra menu links for the signed-in user's role. */
 export const linksFor = (user) => roleLinks[user?.role] ?? []

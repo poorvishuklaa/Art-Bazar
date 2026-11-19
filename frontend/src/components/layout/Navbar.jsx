@@ -4,7 +4,8 @@ import logo from '../../assets/logo.png'
 import { BagIcon, CloseIcon, MenuIcon, SearchIcon } from '../ui/Icons'
 import { useAuth } from '../../hooks/useAuth'
 import UserMenu from './UserMenu'
-import { linksFor } from '../../utils/roles'
+import { canShop, linksFor } from '../../utils/roles'
+import { useCart } from '../../hooks/useCart'
 
 const links = [
   { to: '/', label: 'Home' },
@@ -17,6 +18,8 @@ const Navbar = () => {
   const [open, setOpen] = useState(false)
   const { user, isAuthenticated, status, logout } = useAuth()
   const navigate = useNavigate()
+  const { cart } = useCart()
+  const cartCount = cart?.itemCount ?? 0
 
   const handleMobileLogout = async () => {
     setOpen(false)
@@ -59,9 +62,20 @@ const Navbar = () => {
           >
             <SearchIcon className="h-6 w-6" />
           </button>
-          <Link to="/cart" aria-label="Cart" className="text-slate-brand hover:text-brand-500">
-            <BagIcon className="h-6 w-6" />
-          </Link>
+          {(!isAuthenticated || canShop(user)) && (
+            <Link
+              to="/cart"
+              aria-label={cartCount ? `Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}` : 'Cart'}
+              className="relative text-slate-brand hover:text-brand-500"
+            >
+              <BagIcon className="h-6 w-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2.5 grid h-5 min-w-5 place-items-center rounded-full bg-brand-500 px-1 text-[11px] font-semibold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+          )}
           {isAuthenticated ? (
             <UserMenu />
           ) : (

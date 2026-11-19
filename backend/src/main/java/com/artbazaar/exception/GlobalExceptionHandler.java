@@ -74,6 +74,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Request body is missing or malformed", req, null);
     }
 
+    @ExceptionHandler(PaymentDeclinedException.class)
+    ResponseEntity<ApiError> declined(PaymentDeclinedException ex, HttpServletRequest req) {
+        return build(HttpStatus.PAYMENT_REQUIRED, ex.getMessage(), req, null);
+    }
+
     @ExceptionHandler(ConflictException.class)
     ResponseEntity<ApiError> conflict(ConflictException ex, HttpServletRequest req) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), req, null);

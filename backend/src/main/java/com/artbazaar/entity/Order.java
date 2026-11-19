@@ -11,10 +11,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import org.hibernate.annotations.BatchSize;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,16 @@ public class Order extends BaseEntity {
     @Column(name = "payment_reference", length = 100)
     private String paymentReference;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", length = 20)
+    private PaymentMethod paymentMethod;
+
+    @Column(name = "paid_at")
+    private Instant paidAt;
+
+    @Column(name = "cancelled_at")
+    private Instant cancelledAt;
+
     @Column(name = "shipping_name", nullable = false, length = 100)
     private String shippingName;
 
@@ -61,6 +73,8 @@ public class Order extends BaseEntity {
     @Column(name = "shipping_pincode", nullable = false, length = 10)
     private String shippingPincode;
 
+    /** Batch-fetched so a page of orders loads its items in one extra query, not one per order. */
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 

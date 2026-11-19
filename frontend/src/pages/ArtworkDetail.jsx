@@ -7,6 +7,7 @@ import ArtworkGrid from '../components/artwork/ArtworkGrid'
 import Spinner from '../components/ui/Spinner'
 import NotFound from './NotFound'
 import Alert from '../components/ui/Alert'
+import AddToCart from '../components/artwork/AddToCart'
 
 const stockLabel = (stock) => {
   if (stock === 0) return { text: 'Sold out', cls: 'text-gray-500' }
@@ -65,15 +66,8 @@ const ArtworkDetail = () => {
           <p className="mt-6 text-3xl font-semibold text-brand-500">{formatPrice(art.price)}</p>
           <p className={`mt-2 text-sm font-medium ${stock.cls}`}>{stock.text}</p>
 
-          <div className="mt-6 space-y-2">
-            <button
-              type="button"
-              disabled
-              className="w-full rounded-full bg-brand-500 py-3.5 font-medium text-white opacity-50 sm:w-auto sm:px-12"
-            >
-              Add to cart
-            </button>
-            <p className="text-xs text-gray-400">Checkout is opening soon.</p>
+          <div className="mt-6">
+            <AddToCart artwork={art} />
           </div>
 
           {art.description && (

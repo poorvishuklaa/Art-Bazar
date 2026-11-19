@@ -7,7 +7,7 @@ import java.util.List;
 
 /** Typed binding for the {@code app.*} section of application.yml. */
 @ConfigurationProperties(prefix = "app")
-public record AppProperties(Jwt jwt, Admin admin, Seed seed, Cors cors, Storage storage) {
+public record AppProperties(Jwt jwt, Admin admin, Seed seed, Orders orders, Cors cors, Storage storage) {
 
     public record Jwt(String secret, Duration accessTokenTtl, Duration refreshTokenTtl, boolean refreshCookieSecure) {
     }
@@ -16,6 +16,10 @@ public record AppProperties(Jwt jwt, Admin admin, Seed seed, Cors cors, Storage 
     }
 
     public record Seed(boolean demoData) {
+    }
+
+    /** @param paymentWindow how long stock stays reserved for an unpaid order */
+    public record Orders(Duration paymentWindow) {
     }
 
     public record Cors(List<String> allowedOrigins) {
