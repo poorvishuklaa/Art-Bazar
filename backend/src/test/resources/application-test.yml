@@ -1,0 +1,10 @@
+# Tests run on in-memory H2 (MySQL mode) so they need neither Docker nor a MySQL server.
+# The same Flyway migrations run here, so a schema/entity mismatch fails the build.
+spring:
+  datasource:
+    url: jdbc:h2:mem:artbazaar;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+app:
+  storage:
+    upload-dir: ${java.io.tmpdir}/artbazaar-test-uploads
