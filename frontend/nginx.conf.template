@@ -1,0 +1,35 @@
+# Rendered at container start by the nginx image (envsubst on /etc/nginx/templates/*.template).
+#   BACKEND_URL     where the Spring Boot API listens, e.g. http://backend:8080
+#   NGINX_RESOLVER  DNS server used to look the backend up again on every request, so a
+#                   redeployed backend with a new IP is found without restarting nginx
+server {
+    listen ${PORT};
+    root /usr/share/nginx/html;
+    index index.html;
+    client_max_body_size 6m;
+
+    resolver ${NGINX_RESOLVER} valid=10s ipv6=on;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+
+    # API, uploaded images and seeded images are served by Spring Boot.
+    location ~ ^/(api|uploads|images)/ {
+        set $backend ${BACKEND_URL};
+        proxy_pass $backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Hashed build assets never change, so browsers may cache them for a year.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Let React Router handle every other path.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -48,6 +48,14 @@ Web app: http://localhost:3000 · API: http://localhost:8080 · Swagger UI: http
    ```
    Open http://localhost:5173
 
+### Frontend container variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PORT` | `80` | Port nginx listens on |
+| `BACKEND_URL` | `http://backend:8080` | Where nginx forwards `/api`, `/uploads` and `/images` |
+| `NGINX_RESOLVER` | `127.0.0.11` (Docker DNS) | DNS server used to find the backend; `[fd12::10]` on Railway |
+
 ### Configuration (backend environment variables)
 
 | Variable | Default |
