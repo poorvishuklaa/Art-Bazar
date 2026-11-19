@@ -18,6 +18,11 @@ import ArtworkEditor from './pages/artist/ArtworkEditor'
 import ArtistOrders from './pages/artist/ArtistOrders'
 import ArtistSales from './pages/artist/ArtistSales'
 import ArtistApplications from './pages/admin/ArtistApplications'
+import AdminOverview from './pages/admin/AdminOverview'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminArtworks from './pages/admin/AdminArtworks'
+import AdminCategories from './pages/admin/AdminCategories'
+import AdminOrders from './pages/admin/AdminOrders'
 
 const App = () => (
   <Routes>
@@ -44,7 +49,12 @@ const App = () => (
         <Route path="artist/sales" element={<ArtistSales />} />
       </Route>
       <Route element={<ProtectedRoute roles={['ADMIN']} />}>
+        <Route path="admin" element={<AdminOverview />} />
         <Route path="admin/artists" element={<ArtistApplications />} />
+        <Route path="admin/users" element={<AdminUsers />} />
+        <Route path="admin/artworks" element={<AdminArtworks />} />
+        <Route path="admin/categories" element={<AdminCategories />} />
+        <Route path="admin/orders" element={<AdminOrders />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

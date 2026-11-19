@@ -33,6 +33,13 @@ public interface ArtworkRepository extends JpaRepository<Artwork, Long>, JpaSpec
 
     long countByArtistIdAndStatus(Long artistId, ArtworkStatus status);
 
+    long countByStatus(ArtworkStatus status);
+
+    long countByCategoryId(Long categoryId);
+
+    @Query("select a.category.id, count(a) from Artwork a where a.status <> com.artbazaar.entity.ArtworkStatus.REMOVED group by a.category.id")
+    List<Object[]> countLiveByCategory();
+
     /**
      * SELECT ... FOR UPDATE on the given artworks, in id order so that two checkouts locking
      * overlapping sets always lock in the same order and cannot deadlock.

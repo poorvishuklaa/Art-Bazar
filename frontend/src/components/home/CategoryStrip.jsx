@@ -14,11 +14,17 @@ const CategoryStrip = ({ categories }) => (
           to={`/artworks?category=${c.slug}`}
           className="group flex min-w-[88px] flex-col items-center gap-2 text-center"
         >
-          <img
-            src={c.iconUrl}
-            alt=""
-            className="h-20 w-20 rounded-full object-cover p-1 ring-1 ring-gray-200 transition group-hover:ring-4 group-hover:ring-brand-500/60 sm:h-24 sm:w-24"
-          />
+          {c.iconUrl ? (
+            <img
+              src={c.iconUrl}
+              alt=""
+              className="h-20 w-20 rounded-full object-cover p-1 ring-1 ring-gray-200 transition group-hover:ring-4 group-hover:ring-brand-500/60 sm:h-24 sm:w-24"
+            />
+          ) : (
+            <span className="grid h-20 w-20 place-items-center rounded-full bg-brand-50 text-2xl font-semibold text-brand-500 ring-1 ring-gray-200 transition group-hover:ring-4 group-hover:ring-brand-500/60 sm:h-24 sm:w-24">
+              {c.name.charAt(0)}
+            </span>
+          )}
           <span className="text-sm text-gray-600 group-hover:text-brand-500 sm:text-base">{c.name}</span>
         </Link>
       ))}

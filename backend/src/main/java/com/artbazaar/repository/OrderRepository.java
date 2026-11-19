@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -19,6 +21,23 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findWithItemsByIdAndBuyerId(Long id, Long buyerId);
 
     Page<Order> findByBuyerId(Long buyerId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"buyer"})
+    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"buyer"})
+    Page<Order> findAll(Pageable pageable);
+
+    long countByPaymentStatus(PaymentStatus paymentStatus);
+
+    long countByStatusIn(Collection<OrderStatus> statuses);
+
+    @Query("""
+            select coalesce(sum(o.totalAmount), 0), count(o) from Order o
+            where o.paymentStatus = com.artbazaar.entity.PaymentStatus.PAID and (:since is null or o.paidAt >= :since)
+            """)
+    List<Object[]> paidTotals(@Param("since") Instant since);
 
     /** Orders that were placed but never paid, older than the cutoff. */
     List<Order> findByStatusAndPaymentStatusInAndCreatedAtBefore(OrderStatus status,

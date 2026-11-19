@@ -62,7 +62,7 @@ const Navbar = () => {
           >
             <SearchIcon className="h-6 w-6" />
           </button>
-          {(!isAuthenticated || canShop(user)) && (
+          {status !== 'loading' && (!isAuthenticated || canShop(user)) && (
             <Link
               to="/cart"
               aria-label={cartCount ? `Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}` : 'Cart'}

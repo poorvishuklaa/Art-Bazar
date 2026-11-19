@@ -24,4 +24,6 @@ public interface ArtistProfileRepository extends JpaRepository<ArtistProfile, Lo
 
     @EntityGraph(attributePaths = "user")
     List<ArtistProfile> findAllByOrderByCreatedAtDesc();
+
+    long countByApproved(boolean approved);
 }

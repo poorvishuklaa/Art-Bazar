@@ -3,6 +3,7 @@ import { fetchArtistApplications, setArtistApproval } from '../../api/admin'
 import { getErrorMessage } from '../../api/client'
 import Alert from '../../components/ui/Alert'
 import Spinner from '../../components/ui/Spinner'
+import AdminNav from '../../components/admin/AdminNav'
 
 const tabs = [
   { key: 'pending', label: 'Pending', approved: false },
@@ -48,7 +49,8 @@ const ArtistApplications = () => {
   }
 
   return (
-    <div className="py-12">
+    <div className="py-10">
+      <AdminNav />
       <h1 className="text-3xl font-medium">Artist applications</h1>
       <p className="mt-2 text-gray-500">Approve artists before they can list artworks on the marketplace.</p>
 

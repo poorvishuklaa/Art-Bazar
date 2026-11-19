@@ -8,7 +8,7 @@ import QuantityStepper from '../ui/QuantityStepper'
 import Alert from '../ui/Alert'
 
 const AddToCart = ({ artwork }) => {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, status } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const { cart } = useCart()
@@ -18,6 +18,9 @@ const AddToCart = ({ artwork }) => {
 
   const inCart = cart?.items.find((l) => l.artwork.id === artwork.id)?.quantity ?? 0
   const canAddMore = artwork.stock - inCart
+
+  // Until we know who is signed in, show a placeholder rather than a button that may not apply.
+  if (status === 'loading') return <div className="h-[52px] animate-pulse rounded-full bg-gray-100 sm:w-60" aria-hidden="true" />
 
   if (artwork.stock === 0) {
     return <p className="rounded-xl bg-gray-50 p-4 text-sm text-gray-600">This piece has been sold. Check the artist&apos;s other work below.</p>

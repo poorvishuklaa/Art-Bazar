@@ -18,7 +18,7 @@ export const destinationAfterLogin = (user, from) => (from && canVisit(user, fro
 
 /** Where each role lands after signing in, unless they were heading somewhere specific. */
 export const homeFor = (user) => {
-  if (user?.role === 'ADMIN') return '/admin/artists'
+  if (user?.role === 'ADMIN') return '/admin'
   if (user?.role === 'ARTIST') return '/artist'
   return '/'
 }
@@ -30,7 +30,10 @@ const roleLinks = {
     { to: '/artist/sales', label: 'Sales' },
     { to: '/orders', label: 'My purchases' },
   ],
-  ADMIN: [{ to: '/admin/artists', label: 'Artist applications' }],
+  ADMIN: [
+    { to: '/admin', label: 'Admin dashboard' },
+    { to: '/admin/artists', label: 'Artist applications' },
+  ],
   BUYER: [{ to: '/orders', label: 'My orders' }],
 }
 
