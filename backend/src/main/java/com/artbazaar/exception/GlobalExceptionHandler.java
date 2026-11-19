@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -38,6 +38,18 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req, null);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    ResponseEntity<ApiError> unauthorized(UnauthorizedException ex, HttpServletRequest req) {
+        ApiError body = new ApiError(Instant.now(), 401, HttpStatus.UNAUTHORIZED.getReasonPhrase(), ex.getMessage(),
+                req.getRequestURI(), ex.getCode(), null);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<ApiError> unreadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, "Request body is missing or malformed", req, null);
+    }
+
     @ExceptionHandler(ConflictException.class)
     ResponseEntity<ApiError> conflict(ConflictException ex, HttpServletRequest req) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), req, null);
@@ -61,11 +73,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), req, null);
     }
 
-    @ExceptionHandler(DisabledException.class)
-    ResponseEntity<ApiError> disabled(DisabledException ex, HttpServletRequest req) {
-        return build(HttpStatus.FORBIDDEN, "Account is disabled", req, null);
-    }
-
     @ExceptionHandler(AuthenticationException.class)
     ResponseEntity<ApiError> unauthenticated(AuthenticationException ex, HttpServletRequest req) {
         return build(HttpStatus.UNAUTHORIZED, "Authentication required", req, null);
@@ -85,7 +92,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest req,
                                            Map<String, String> fieldErrors) {
         ApiError body = new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message,
-                req.getRequestURI(), fieldErrors);
+                req.getRequestURI(), null, fieldErrors);
         return ResponseEntity.status(status).body(body);
     }
 }

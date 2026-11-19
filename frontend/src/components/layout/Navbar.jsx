@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
 import { BagIcon, CloseIcon, MenuIcon, SearchIcon } from '../ui/Icons'
+import { useAuth } from '../../hooks/useAuth'
+import UserMenu from './UserMenu'
+import { linksFor } from '../../utils/roles'
 
 const links = [
   { to: '/', label: 'Home' },
@@ -12,6 +15,14 @@ const links = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false)
+  const { user, isAuthenticated, status, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleMobileLogout = async () => {
+    setOpen(false)
+    await logout()
+    navigate('/')
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/90 backdrop-blur">
@@ -46,12 +57,18 @@ const Navbar = () => {
           <Link to="/cart" aria-label="Cart" className="text-slate-brand hover:text-brand-500">
             <BagIcon className="h-6 w-6" />
           </Link>
-          <Link
-            to="/login"
-            className="hidden rounded-full border border-brand-500 px-6 py-2 text-slate-brand transition hover:bg-brand-50 sm:inline-block"
-          >
-            Sign in
-          </Link>
+          {isAuthenticated ? (
+            <UserMenu />
+          ) : (
+            status !== 'loading' && (
+              <Link
+                to="/login"
+                className="hidden rounded-full border border-brand-500 px-6 py-2 text-slate-brand transition hover:bg-brand-50 sm:inline-block"
+              >
+                Sign in
+              </Link>
+            )
+          )}
           <button
             type="button"
             className="text-slate-brand md:hidden"
@@ -73,11 +90,29 @@ const Navbar = () => {
               </Link>
             </li>
           ))}
-          <li>
-            <Link to="/login" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 font-medium text-brand-500 hover:bg-brand-50">
-              Sign in
-            </Link>
-          </li>
+          {isAuthenticated ? (
+            <>
+              {linksFor(user).map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 text-slate-brand hover:bg-brand-50">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+              <li className="mt-2 border-t border-gray-100 pt-2">
+                <p className="px-3 text-xs text-gray-500">Signed in as {user.email}</p>
+                <button type="button" onClick={handleMobileLogout} className="mt-1 block w-full rounded-lg px-3 py-2 text-left font-medium text-red-600 hover:bg-red-50">
+                  Sign out
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link to="/login" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 font-medium text-brand-500 hover:bg-brand-50">
+                Sign in
+              </Link>
+            </li>
+          )}
         </ul>
       )}
     </header>

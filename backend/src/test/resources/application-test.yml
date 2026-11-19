@@ -8,3 +8,7 @@ spring:
 app:
   storage:
     upload-dir: ${java.io.tmpdir}/artbazaar-test-uploads
+  admin:
+    email: admin@test.local
+    password: AdminPass123
+    name: Test Admin

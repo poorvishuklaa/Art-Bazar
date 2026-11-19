@@ -13,5 +13,6 @@ public record ApiError(
         String error,
         String message,
         String path,
+        String code,
         Map<String, String> fieldErrors) {
 }
