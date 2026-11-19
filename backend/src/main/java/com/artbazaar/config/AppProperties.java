@@ -7,12 +7,15 @@ import java.util.List;
 
 /** Typed binding for the {@code app.*} section of application.yml. */
 @ConfigurationProperties(prefix = "app")
-public record AppProperties(Jwt jwt, Admin admin, Cors cors, Storage storage) {
+public record AppProperties(Jwt jwt, Admin admin, Seed seed, Cors cors, Storage storage) {
 
     public record Jwt(String secret, Duration accessTokenTtl, Duration refreshTokenTtl, boolean refreshCookieSecure) {
     }
 
     public record Admin(String email, String password, String name) {
+    }
+
+    public record Seed(boolean demoData) {
     }
 
     public record Cors(List<String> allowedOrigins) {

@@ -8,8 +8,8 @@ import { linksFor } from '../../utils/roles'
 
 const links = [
   { to: '/', label: 'Home' },
-  { to: '/#explore', label: 'Explore' },
-  { to: '/#artworks', label: 'Artworks' },
+  { to: '/artworks', label: 'Artworks' },
+  { to: '/#explore', label: 'Categories' },
   { to: '/#footer', label: 'Contact' },
 ]
 
@@ -37,10 +37,10 @@ const Navbar = () => {
             <li key={l.label}>
               <NavLink
                 to={l.to}
-                end
+                end={l.to === '/'}
                 className={({ isActive }) =>
                   `pb-1 transition hover:text-brand-500 ${
-                    isActive && l.to === '/' ? 'border-b-2 border-sky-brand text-brand-500' : ''
+                    isActive && !l.to.includes('#') ? 'border-b-2 border-sky-brand text-brand-500' : ''
                   }`
                 }
               >
@@ -51,7 +51,12 @@ const Navbar = () => {
         </ul>
 
         <div className="flex items-center gap-4 sm:gap-6">
-          <button type="button" aria-label="Search" className="text-slate-brand hover:text-brand-500">
+          <button
+            type="button"
+            aria-label="Search artworks"
+            onClick={() => navigate('/artworks', { state: { focusSearch: Date.now() } })}
+            className="text-slate-brand hover:text-brand-500"
+          >
             <SearchIcon className="h-6 w-6" />
           </button>
           <Link to="/cart" aria-label="Cart" className="text-slate-brand hover:text-brand-500">

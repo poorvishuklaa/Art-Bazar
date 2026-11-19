@@ -1,24 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { fetchCategories } from '../api/categories'
 import { fallbackCategories } from '../data/categories'
 
-/** Loads categories from the API, keeping the bundled list if the backend is unreachable. */
+const iconBySlug = Object.fromEntries(fallbackCategories.map((c) => [c.slug, c.iconUrl]))
+
+/**
+ * Categories from the API (ids are needed for the artwork form), with the bundled icons
+ * and list as a fallback while loading or if the backend is unreachable.
+ */
 export function useCategories() {
-  const [categories, setCategories] = useState(fallbackCategories)
-
-  useEffect(() => {
-    let cancelled = false
-    fetchCategories()
-      .then((data) => {
-        if (!cancelled && Array.isArray(data) && data.length > 0) setCategories(data)
-      })
-      .catch(() => {
-        /* backend not running: fallback list stays */
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  return categories
+  const { data } = useQuery({ queryKey: ['categories'], queryFn: fetchCategories, staleTime: 60 * 60 * 1000 })
+  if (!Array.isArray(data) || data.length === 0) return fallbackCategories
+  return data.map((c) => ({ ...c, iconUrl: iconBySlug[c.slug] ?? c.iconUrl }))
 }

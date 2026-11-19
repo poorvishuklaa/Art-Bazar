@@ -1,25 +1,41 @@
-import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import Hero from '../components/home/Hero'
 import CategoryStrip from '../components/home/CategoryStrip'
-import ArtworkGrid from '../components/home/ArtworkGrid'
+import ArtworkGrid, { ArtworkGridSkeleton } from '../components/artwork/ArtworkGrid'
+import Alert from '../components/ui/Alert'
 import { useCategories } from '../hooks/useCategories'
-import { sampleArtworks } from '../data/sampleArtworks'
+import { searchArtworks } from '../api/artworks'
+import { getErrorMessage } from '../api/client'
+
+const latestQuery = { sort: 'newest', size: 8 }
 
 const Home = () => {
   const categories = useCategories()
-  const [selected, setSelected] = useState(null)
-
-  const artworks = useMemo(
-    () => (selected ? sampleArtworks.filter((a) => a.categorySlug === selected) : sampleArtworks),
-    [selected],
-  )
-  const selectedName = categories.find((c) => c.slug === selected)?.name
+  const latest = useQuery({ queryKey: ['artworks', latestQuery], queryFn: () => searchArtworks(latestQuery) })
 
   return (
     <>
       <Hero />
-      <CategoryStrip categories={categories} selected={selected} onSelect={setSelected} />
-      <ArtworkGrid artworks={artworks} title={selectedName ?? 'Artworks from local artists'} />
+      <CategoryStrip categories={categories} />
+
+      <section id="artworks" className="scroll-mt-24 pt-10">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-2xl font-medium sm:text-3xl">Fresh from local artists</h2>
+          <Link to="/artworks" className="shrink-0 text-sm font-medium text-brand-500 hover:underline">
+            Browse all →
+          </Link>
+        </div>
+        <div className="mt-8">
+          {latest.isError ? (
+            <Alert type="error">{getErrorMessage(latest.error, 'Could not load artworks.')}</Alert>
+          ) : latest.isPending ? (
+            <ArtworkGridSkeleton />
+          ) : (
+            <ArtworkGrid artworks={latest.data.content} />
+          )}
+        </div>
+      </section>
     </>
   )
 }

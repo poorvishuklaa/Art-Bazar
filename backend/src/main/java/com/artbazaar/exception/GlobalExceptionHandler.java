@@ -6,9 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -45,6 +49,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    ResponseEntity<ApiError> missingPart(MissingServletRequestPartException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, "Missing '" + ex.getRequestPartName() + "' in the upload", req, null);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    ResponseEntity<ApiError> missingParam(MissingServletRequestParameterException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, "Missing parameter '" + ex.getParameterName() + "'", req, null);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    ResponseEntity<ApiError> mediaType(HttpMediaTypeNotSupportedException ex, HttpServletRequest req) {
+        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage(), req, null);
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    ResponseEntity<ApiError> optimisticLock(OptimisticLockingFailureException ex, HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, "This item was changed by someone else. Reload and try again.", req, null);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     ResponseEntity<ApiError> unreadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST, "Request body is missing or malformed", req, null);
@@ -55,11 +79,13 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), req, null);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<ApiError> validation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+    /** Covers @RequestBody (MethodArgumentNotValidException) and @ModelAttribute/form binding (BindException). */
+    @ExceptionHandler(BindException.class)
+    ResponseEntity<ApiError> validation(BindException ex, HttpServletRequest req) {
         Map<String, String> fields = new LinkedHashMap<>();
         ex.getBindingResult().getFieldErrors()
-                .forEach(fe -> fields.putIfAbsent(fe.getField(), fe.getDefaultMessage()));
+                .forEach(fe -> fields.putIfAbsent(fe.getField(),
+                        fe.isBindingFailure() ? "Invalid value" : fe.getDefaultMessage()));
         return build(HttpStatus.BAD_REQUEST, "Validation failed", req, fields);
     }
 

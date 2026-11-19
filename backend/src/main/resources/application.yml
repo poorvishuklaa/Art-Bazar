@@ -41,6 +41,9 @@ app:
     email: ${ADMIN_EMAIL:}
     password: ${ADMIN_PASSWORD:}
     name: ${ADMIN_NAME:Admin}
+  seed:
+    # Adds demo artists and artworks when the catalog is empty, so a fresh install has something to browse.
+    demo-data: ${SEED_DEMO_DATA:true}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   storage:

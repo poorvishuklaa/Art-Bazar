@@ -15,7 +15,7 @@ const Hero = () => (
         Discover original paintings, crafts and handmade decor, bought directly from the local artists who made them.
       </p>
       <Link
-        to="/#artworks"
+        to="/artworks"
         className="inline-block rounded-full bg-white px-7 py-3 text-sm font-medium text-ink transition hover:bg-brand-500 hover:text-white"
       >
         Shop now

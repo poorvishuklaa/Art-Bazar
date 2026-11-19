@@ -18,7 +18,7 @@ export const homeFor = (user) => {
 }
 
 const roleLinks = {
-  ARTIST: [{ to: '/artist', label: 'Artist space' }],
+  ARTIST: [{ to: '/artist', label: 'My artworks' }],
   ADMIN: [{ to: '/admin/artists', label: 'Artist applications' }],
   BUYER: [],
 }

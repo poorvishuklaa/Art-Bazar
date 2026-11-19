@@ -26,7 +26,7 @@ const Footer = () => (
       <div>
         <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">Marketplace</h3>
         <ul className="space-y-2 text-sm">
-          <li><Link to="/#explore" className="hover:text-white">Browse categories</Link></li>
+          <li><Link to="/artworks" className="hover:text-white">Browse artworks</Link></li>
           <li><Link to="/register" className="hover:text-white">Sell your art</Link></li>
           <li><Link to="/login" className="hover:text-white">Sign in</Link></li>
         </ul>

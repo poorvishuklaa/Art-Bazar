@@ -61,6 +61,7 @@ Web app: http://localhost:3000 · API: http://localhost:8080 · Swagger UI: http
 | `JWT_ACCESS_TTL` / `JWT_REFRESH_TTL` | `15m` / `7d` |
 | `REFRESH_COOKIE_SECURE` | `false` (set `true` when served over HTTPS) |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` | unset (no admin is created) |
+| `SEED_DEMO_DATA` | `true`: adds 3 demo artists and 18 artworks when the catalog is empty |
 
 ## Authentication
 
@@ -77,12 +78,30 @@ cd backend && mvn test        # runs on in-memory H2 with the same Flyway migrat
 cd frontend && npm run lint && npm run build
 ```
 
+## Catalog API
+
+| Method | Endpoint | Who |
+|--------|----------|-----|
+| `GET` | `/api/artworks?q=&category=&minPrice=&maxPrice=&artistId=&sort=&page=&size=` | anyone |
+| `GET` | `/api/artworks/{id}` | anyone |
+| `GET` | `/api/artists/{id}` | anyone |
+| `GET` | `/api/categories` | anyone |
+| `GET` | `/api/artist/artworks` · `/api/artist/artworks/{id}` | artist (own artworks only) |
+| `POST` | `/api/artist/artworks` (multipart: fields + `image`) | approved artist |
+| `PUT` | `/api/artist/artworks/{id}` (multipart, `image` optional) | approved artist |
+| `PATCH` | `/api/artist/artworks/{id}/status` (`ACTIVE` / `HIDDEN`) | approved artist |
+| `DELETE` | `/api/artist/artworks/{id}` | approved artist |
+
+`sort` is one of `newest`, `price_asc`, `price_desc` or `title`. Buyers only see listed artworks from approved, active artists. Deleting is a soft delete, so past orders keep their history. Uploaded images are checked by their actual content (JPEG, PNG or WebP, up to 5 MB) and saved under `UPLOAD_DIR`.
+
+Full interactive docs: http://localhost:8080/swagger-ui.html
+
 ## Roadmap
 
 - [x] Project setup: Spring Boot API, MySQL schema, Docker, Tailwind frontend
 - [x] Accounts: register, sign in, JWT with refresh tokens, roles, artist approval
-- [ ] Artwork catalog: search, filters, pagination, image upload
+- [x] Artwork catalog: search, filters, pagination, image upload, artist dashboard
 - [ ] Cart, checkout (simulated payment) and orders
-- [ ] Artist dashboard: manage artworks, fulfil orders, sales
+- [ ] Artist orders and sales
 - [ ] Admin tools and reviews
 - [ ] Deployment on Railway
